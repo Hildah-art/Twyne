@@ -1,4 +1,4 @@
-import "./../styles/MatchCard.css";
+
 
 function MatchCard({ name, age, bio, image }) {
   return (

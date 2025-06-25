@@ -9,7 +9,7 @@ const Profile = () => {
         <h2>Hilda</h2>
         <p>Nairobi, 24</p>
         <p className="bio">
-          Hi! I'm Jane, I love traveling, photography, and good vibes. Let’s connect!
+          Hi! I'm Hilda, I love traveling, photography, and good vibes. Let’s connect!
         </p>
       </div>
     </div>

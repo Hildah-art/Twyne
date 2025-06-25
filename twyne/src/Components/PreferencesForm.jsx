@@ -1,61 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import matches from '../data/matches'; // adjust the path if needed
 
-const PreferencesForm = () => {
+const Discoversection = () => {
   const [preferences, setPreferences] = useState({
     preferredGender: '',
     minAge: '',
-    maxAge: ''
+    maxAge: '',
+    preferredLocation: ''
   });
 
-  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    const savedPrefs = JSON.parse(localStorage.getItem('datingPreferences'));
+    if (savedPrefs) setPreferences(savedPrefs);
+  }, []);
 
-  const handleChange = (e) => {
-    setPreferences({ ...preferences, [e.target.name]: e.target.value });
-    setSaved(false);
-  };
+  const filteredMatches = matches.filter((match) => {
+    const {
+      preferredGender,
+      minAge,
+      maxAge,
+      preferredLocation
+    } = preferences;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSaved(true);
-  };
+    return (
+      (!preferredGender || match.gender === preferredGender || preferredGender === 'any') &&
+      (!minAge || match.age >= parseInt(minAge)) &&
+      (!maxAge || match.age <= parseInt(maxAge)) &&
+      (!preferredLocation || match.location === preferredLocation)
+    );
+  });
 
   return (
-    <div className="signup-container">
-      <h2>What’s your type?</h2>
-      <form onSubmit={handleSubmit}>
-        <select
-          name="preferredGender"
-          value={preferences.preferredGender}
-          onChange={handleChange}
-        >
-          <option value="">Preferred Gender</option>
-          <option value="female">Women</option>
-          <option value="male">Men</option>
-          <option value="nonbinary">Non-binary</option>
-          <option value="any">Anyone</option>
-        </select>
-
-        <input
-          type="number"
-          name="minAge"
-          placeholder="Minimum Age"
-          value={preferences.minAge}
-          onChange={handleChange}
-        />
-
-        <input
-          type="number"
-          name="maxAge"
-          placeholder="Maximum Age"
-          value={preferences.maxAge}
-          onChange={handleChange}
-        />
-
-        {saved && <p className="success">Preferences saved 💘</p>}
-        <button type="submit">Save Preferences</button>
-      </form>
+    <div className="discover-section">
+      <h2>Discover New People</h2>
+      <div className="profile-grid">
+        {filteredMatches.length > 0 ? (
+          filteredMatches.map((match) => (
+            <div key={match.id} className="profile-card">
+              <div className="profile-pic">
+                <img src={match.image} alt={match.name} style={{ width: '100%', height: '100%', borderRadius: '10px' }} />
+              </div>
+              <h3>{match.name}</h3>
+              <p>{match.location}</p>
+              <p className="bio">{match.bio}</p>
+            </div>
+          ))
+        ) : (
+          <p>No matches found for your preferences 💔</p>
+        )}
+      </div>
     </div>
   );
 };
 
-export default PreferencesForm;
+export default Discoversection;

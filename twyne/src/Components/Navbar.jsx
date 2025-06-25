@@ -1,8 +1,11 @@
+import React from 'react';
+
+
 function Navbar() {
   return (
-    <nav style={{ backgroundColor: "#ff4d6d", padding: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <h1 style={{ color: "#fff" }}>Twyne</h1>
-      <ul style={{ listStyle: "none", display: "flex", gap: "1rem", color: "#fff" }}>
+    <nav className="navbar">
+      <h1 className="logo">Twyne</h1>
+      <ul className="nav-links">
         <li>Home</li>
         <li>Discover</li>
         <li>Profile</li>
@@ -13,3 +16,5 @@ function Navbar() {
 }
 
 export default Navbar;
+
+

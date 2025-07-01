@@ -1,85 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess(false);
 
-    const { email, password } = formData;
-
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    try {
-      const response = await fetch('http://localhost:5555/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
+    fetch("http://localhost:5555/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => {
+        if (!res.ok) return res.json().then((data) => { throw new Error(data.error); });
+        return res.json();
+      })
+      .then((data) => {
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user_id", data.user.id);
+        alert("Login successful");
+        navigate("/profile"); 
+      })
+      .catch((err) => {
+        alert(err.message || "Login failed");
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-     
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      console.log('Logged in user:', data.user);
-
-      setSuccess(true);
-      
-    } catch (err) {
-      setError(err.message);
-    }
   };
 
   return (
-    <div className="login-container">
-      <h2>Welcome back</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-
-        {error && <p className="error">{error}</p>}
-        {success && <p className="success">Login successful!</p>}
-
-        <button type="submit">Log In</button>
-      </form>
-    </div>
+    <form onSubmit={handleLogin}>
+      <h2>Login</h2>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      /><br/>
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+      /><br/>
+      <button type="submit">Login</button>
+    </form>
   );
-};
+}
 
 export default Login;

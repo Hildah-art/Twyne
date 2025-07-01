@@ -1,6 +1,6 @@
-# seed.py
+
 from werkzeug.security import generate_password_hash
-from app import app  # make sure app.py has db.init_app(app)
+from app import app
 from models import db, Users, Preferences, Matches, Messages, Reports
 from datetime import datetime
 from faker import Faker
@@ -16,18 +16,18 @@ with app.app_context():
 
     fake = Faker()
 
-    # Create a list to store users to ensure we have them for relationships
+    
     users = []
 
-    # Users
+    
     print("Seeding Users...")
-    for _ in range(20):  # Create 20 fake users
+    for _ in range(20): 
         gender = random.choice(["male", "female", "other"])
         user = Users(
             name=fake.name(),
             image_url=fake.image_url(),
             email=fake.unique.email(),
-            password_hash=generate_password_hash('password123'), # All users have 'password123' for easy testing
+            password_hash=generate_password_hash('password123'), 
             age=random.randint(18, 60),
             gender=gender,
             location=fake.city(),
@@ -38,15 +38,15 @@ with app.app_context():
     db.session.commit()
     print(f"Seeded {len(users)} users.")
 
-    # Preferences
+    
     print("Seeding Preferences...")
     preferences = []
     for user in users:
-        # Each user gets one preference
-        preferred_gender = random.choice([g for g in ["male", "female", "other"] if g != user.gender] + [user.gender]) # Try to make it diverse
+        
+        preferred_gender = random.choice([g for g in ["male", "female", "other"] if g != user.gender] + [user.gender]) 
         pref = Preferences(
             user_id=user.id,
-            preferred_age=random.randint(max(18, user.age - 5), min(60, user.age + 10)), # Preferred age around user's age
+            preferred_age=random.randint(max(18, user.age - 5), min(60, user.age + 10)), 
             preferred_gender=preferred_gender
         )
         preferences.append(pref)
@@ -54,14 +54,14 @@ with app.app_context():
     db.session.commit()
     print(f"Seeded {len(preferences)} preferences.")
 
-    # Matches
+    
     print("Seeding Matches...")
     matches = []
-    # Create some random matches between existing users
-    num_matches = min(30, len(users) * (len(users) - 1) // 2) # Max possible unique pairs
+   
+    num_matches = min(30, len(users) * (len(users) - 1) // 2)
     for _ in range(num_matches):
-        user_1, user_2 = random.sample(users, 2) # Get two unique users
-        # Ensure no duplicate matches (user_1, user_2) or (user_2, user_1)
+        user_1, user_2 = random.sample(users, 2)
+       
         existing_match = db.session.query(Matches).filter(
             ((Matches.user_1_id == user_1.id) & (Matches.user_2_id == user_2.id)) |
             ((Matches.user_1_id == user_2.id) & (Matches.user_2_id == user_1.id))
@@ -74,11 +74,11 @@ with app.app_context():
     db.session.commit()
     print(f"Seeded {len(matches)} matches.")
 
-    # Messages
+    
     print("Seeding Messages...")
     messages = []
     for match in matches:
-        # Create a few messages for each match
+        
         num_messages = random.randint(1, 5)
         for _ in range(num_messages):
             sender = random.choice([match.user_1, match.user_2])
@@ -94,13 +94,13 @@ with app.app_context():
     print(f"Seeded {len(messages)} messages.")
 
 
-    # Reports
+    
     print("Seeding Reports...")
     reports = []
-    # Create some random reports
+    
     for _ in range(5):
         reporter, reported = random.sample(users, 2)
-        if reporter.id != reported.id: # Ensure reporter and reported are different
+        if reporter.id != reported.id: 
             report = Reports(
                 reporter_id=reporter.id,
                 reported_id=reported.id,

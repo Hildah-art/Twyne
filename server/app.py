@@ -232,7 +232,14 @@ class ReportById(Resource):
 class Match(Resource):
     @jwt_required()
     def get(self):
-        return make_response([m.to_dict() for m in Matches.query.all()], 200)
+        current_user_id = get_jwt_identity()
+        user_id = current_user['id']
+        
+        matches = Matches.query.filter(
+            (Matches.user_1_id == user_id) | (Matches.user_2_id == user_id)
+        ).all()
+
+        return jsonify([match.to_dict() for match in matches]), 200
 
     @jwt_required()
     def post(self):

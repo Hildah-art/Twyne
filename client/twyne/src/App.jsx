@@ -1,5 +1,6 @@
 import React from "react";
-import "./styles/index.css";
+import { Routes, Route } from "react-router-dom";
+
 import Navbar from "./Components/Navbar";
 import Hero from "./Components/Hero";
 import Discoversection from "./Components/Discoversection";
@@ -14,29 +15,23 @@ import ChatWindow from "./Components/ChatWindow";
 import MyMatches from "./Components/MyMatches";
 import ReportButton from "./Components/ReportButton";
 
-
-
 function App() {
   return (
-    <div>
-<Navbar />
-<Hero />
-<Signup />
-<Login />
-<PreferencesForm />
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Hero />} />
+        <Route path="/register" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/preferences" element={<PreferencesForm />} />
+        <Route path="/matches" element={<MyMatches />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/chat" element={<ChatWindow />} />
+        <Route path="/report" element={<ReportButton />} />
 
-<MatchCard />
-<MyMatches />
-<ChatWindow />
-
-<Profile />
-<ReportButton />
-<Footer />
-
-      
-      
-      
-    </div>
+      </Routes>
+      <Footer />
+    </>
   );
 }
 
